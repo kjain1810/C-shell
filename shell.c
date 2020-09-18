@@ -1,7 +1,4 @@
-#include <sys/utsname.h>
-#include <stdio.h>
 #include <string.h>
-#include <unistd.h>
 #include "./libs/builtins/builtin.h"
 #include "./utils/getinput.h"
 #include "./utils/global.h"
@@ -10,43 +7,11 @@
 #include "./libs/other_commands/othercommands.h"
 #include "./libs/history/history.h"
 #include "./libs/nightswatch/nightswatch.h"
-#include <stdlib.h>
+#include "./utils/prompt.h"
 
 char curPath[MAX_PATH_LENGTH];        // Current path of shell
 char prompt[MAX_SHELL_PROMPT_LENGTH]; // Prompt
 char *inp;
-
-void shellPrompt()
-{
-    struct utsname unameData;
-    uname(&unameData);
-    curPath[1023] = '\0';
-    if (getcwd(curPath, sizeof(curPath)) != NULL)
-    {
-        if (strcmp(shellPath, curPath) == 0)
-            strcpy(curPath, "~");
-        else if (checkShellHome(curPath))
-        {
-            int homeLen = strlen(shellPath);
-            int curLen = strlen(curPath);
-            curPath[0] = '~';
-            for (int a = homeLen; a < curLen; a++)
-                curPath[a - homeLen + 1] = curPath[a];
-            curPath[curLen - homeLen + 1] = '\0';
-        }
-    }
-    else
-    {
-        perror("Error in getting current working directory: ");
-        exit(0);
-    }
-    struct passwd *p = getpwuid(getuid());
-    char *userName = p->pw_name;
-    char *systemName = unameData.nodename;
-    sprintf(prompt, "<%s@%s:%s> ", userName, systemName, curPath);
-    printf("\033[0;32m%s\033[0m", prompt);
-    fflush(stdout);
-}
 
 int main(int agrc, char *agrv[])
 {
@@ -75,7 +40,11 @@ int main(int agrc, char *agrv[])
             args = separateInput(multiargs[a]);
             if (numargs == 0)
                 continue;
-            if (strcmp(args[0], "exit") == 0)
+            int todo = parseInputFiles();
+            parseOutputFiles();
+            if (!todo)
+                continue;
+            if (strcmp(args[0], "quit") == 0)
             {
                 addCommand();
                 exit(0);
@@ -97,7 +66,14 @@ int main(int agrc, char *agrv[])
             else
                 otherCommands();
             addCommand();
+            free(args);
+            if (changedStdOut)
+                resetOutputfile();
+            if (changedStdIn)
+                resetInputFile();
         }
+        free(multiargs);
+        free(inp);
     }
     return 0;
 }

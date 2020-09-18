@@ -25,6 +25,13 @@ int commandCnt = 0;
 char processesName[MAX_PROCESSES][MAX_PROCESS_INFO];
 int processesID[MAX_PROCESSES];
 char historyFilePath[128] = "/.shell_history.txt";
+int copyOfStdout;
+int changedStdOut;
+int copyOfStdIn;
+int changedStdIn;
+char curPath[MAX_PATH_LENGTH];        // Current path of shell
+char prompt[MAX_SHELL_PROMPT_LENGTH]; // Prompt
+char *inp;
 
 // Errors
 char MEMORY_ALLOCATION_ERROR[] = "Memorry allocation error";
