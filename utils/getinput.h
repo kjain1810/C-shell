@@ -18,8 +18,12 @@ char *readLine()
     }
 
     size_t len = INPUT_LENGTH;
-    getline(&ret, &len, stdin);
-
+    int x = getline(&ret, &len, stdin);
+    if (x == -1)
+    {
+        printf("quit\n");
+        _exit(0);
+    }
     return ret;
 }
 

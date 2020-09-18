@@ -8,10 +8,45 @@
 #include "./libs/history/history.h"
 #include "./libs/nightswatch/nightswatch.h"
 #include "./utils/prompt.h"
+#include "./libs/envupdate/envupdate.h"
+#include "./libs/jobs/updatejobs.h"
 
 char curPath[MAX_PATH_LENGTH];        // Current path of shell
 char prompt[MAX_SHELL_PROMPT_LENGTH]; // Prompt
 char *inp;
+
+void lookup()
+{
+    if (strcmp(args[0], "quit") == 0)
+    {
+        addCommand();
+        _exit(0);
+    }
+    else if (strcmp(args[0], "pwd") == 0)
+        pwd();
+    else if (strcmp(args[0], "cd") == 0)
+        cd();
+    else if (strcmp(args[0], "echo") == 0)
+        echo();
+    else if (strcmp(args[0], "ls") == 0)
+        ls();
+    else if (strcmp(args[0], "pinfo") == 0)
+        pinfo();
+    else if (strcmp(args[0], "history") == 0)
+        history();
+    else if (strcmp(args[0], "nightswatch") == 0)
+        nightswatch();
+    else if (strcmp(args[0], "setenv") == 0 || strcmp(args[0], "unsetenv") == 0)
+        envupdate();
+    else if (strcmp(args[0], "jobs") == 0 || strcmp(args[0], "kjob") == 0 || strcmp(args[0], "fg") == 0 || strcmp(args[0], "overkill") == 0 || strcmp(args[0], "bg") == 0)
+        updatejobs();
+    else if (args[0][0] == '$')
+    {
+        printf("%s\n", getenv(args[0] + 1));
+    }
+    else
+        otherCommands();
+}
 
 int main(int agrc, char *agrv[])
 {
@@ -44,27 +79,7 @@ int main(int agrc, char *agrv[])
             parseOutputFiles();
             if (!todo)
                 continue;
-            if (strcmp(args[0], "quit") == 0)
-            {
-                addCommand();
-                exit(0);
-            }
-            else if (strcmp(args[0], "pwd") == 0)
-                pwd();
-            else if (strcmp(args[0], "cd") == 0)
-                cd();
-            else if (strcmp(args[0], "echo") == 0)
-                echo();
-            else if (strcmp(args[0], "ls") == 0)
-                ls();
-            else if (strcmp(args[0], "pinfo") == 0)
-                pinfo();
-            else if (strcmp(args[0], "history") == 0)
-                history();
-            else if (strcmp(args[0], "nightswatch") == 0)
-                nightswatch();
-            else
-                otherCommands();
+            lookup();
             addCommand();
             free(args);
             if (changedStdOut)
