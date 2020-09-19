@@ -20,6 +20,7 @@ int numargs;
 int numCommands;
 char shellPath[MAX_PATH_LENGTH]; //Home path of shell
 int shellPID;
+int curForegroundProcess;
 char ret[12][4] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 int commandCnt = 0;
 char processesName[MAX_PROCESSES][MAX_PROCESS_INFO];

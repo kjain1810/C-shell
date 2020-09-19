@@ -68,8 +68,10 @@ void foregroundProcess()
     }
     else
     {
+        curForegroundProcess = flg;
         int status;
-        waitpid(flg, &status, 0);
+        waitpid(flg, &status, WUNTRACED);
+        curForegroundProcess = shellPID;
     }
 }
 

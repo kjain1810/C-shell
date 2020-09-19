@@ -31,7 +31,7 @@ void startbg()
         printf("%s: no such job\n", args[0]);
         return;
     }
-    kill(processesID[arg1 - 1], SIGCONT);
+    // kill(getpgid(processesID[arg1 - 1]), SIGCONT);
 }
 
 #endif

@@ -1,4 +1,6 @@
 #include <string.h>
+#include <sys/wait.h>
+#include <signal.h>
 #include "./libs/builtins/builtin.h"
 #include "./utils/getinput.h"
 #include "./utils/global.h"
@@ -48,14 +50,41 @@ void lookup()
         otherCommands();
 }
 
+void handleSigint()
+{
+    if (curForegroundProcess != shellPID)
+    {
+        kill(curForegroundProcess, SIGINT);
+        curForegroundProcess = shellPID;
+    }
+    else
+    {
+        printf("\n");
+        shellPrompt();
+    }
+}
+
+void handleSigtstp()
+{
+    if (curForegroundProcess == shellPID)
+        return;
+    processesID[commandCnt] = curForegroundProcess;
+    strcpy(processesName[commandCnt], args[0]);
+    kill(curForegroundProcess, SIGTSTP);
+    printf("[%d] %d\n", ++commandCnt, curForegroundProcess);
+    curForegroundProcess = shellPID;
+}
+
 int main(int agrc, char *agrv[])
 {
+    signal(SIGINT, handleSigint);
+    signal(SIGTSTP, handleSigtstp);
     if (getcwd(shellPath, sizeof(shellPath)) == NULL)
     {
         perror("Shell path error: ");
         return 1;
     }
-    shellPID = (int)getpid();
+    curForegroundProcess = shellPID = (int)getpid();
     multiargs = (char **)malloc(MAX_INPUT * sizeof(char *));
     while (1)
     {
