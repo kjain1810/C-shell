@@ -9,14 +9,13 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-void backgroundProcess()
+int backgroundProcess()
 {
     pid_t flg = fork();
     if (flg < 0)
     {
-        exit_status[2] = '(';
         printf("%s: unable to fork\n", args[0]);
-        return;
+        return 0;
     }
     else if (flg == 0)
     {
@@ -46,7 +45,7 @@ void backgroundProcess()
         processesID[commandCnt] = flg;
         strcpy(processesName[commandCnt], args[0]);
         printf("[%d] %d\n", ++commandCnt, flg);
-        exit_status[2] = ')';
+        return 1;
     }
 }
 

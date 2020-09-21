@@ -35,6 +35,8 @@ char curPath[MAX_PATH_LENGTH];        // Current path of shell
 char prompt[MAX_SHELL_PROMPT_LENGTH]; // Prompt
 char *inp;
 char exit_status[4];
+int commandStatus = 1;
+int interrupted = 0;
 
 // Errors
 char MEMORY_ALLOCATION_ERROR[] = "Memorry allocation error";

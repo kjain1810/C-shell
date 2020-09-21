@@ -43,14 +43,14 @@ void get_nth_word(char *line, int n)
     printf("%s\n", ret);
 }
 
-void pinfo()
+int pinfo()
 {
     if (numargs == 1)
         printf("pid -- %d\n", shellPID);
     else if (numargs > 2)
     {
         printf("pinfo: Too many arguments.\n");
-        return;
+        return 0;
     }
     else
     {
@@ -59,7 +59,7 @@ void pinfo()
         else
         {
             printf("No process with pid %s found right now.\n", args[1]);
-            return;
+            return 1;
         }
     }
     char *status = (char *)malloc(MAX_FILE_INFO * sizeof(char));
@@ -121,6 +121,7 @@ void pinfo()
             line[a] = '\0';
     }
     printf("Executable Path -- %s\n", line);
+    return 1;
 }
 
 #endif PINFO

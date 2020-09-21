@@ -61,7 +61,7 @@ void giveFullInfo(char file[], char fileName[])
     printf("\n");
 }
 
-void ls()
+int ls()
 {
     int flagA = 0;
     int flagL = 0;
@@ -81,7 +81,7 @@ void ls()
             else
             {
                 printf("ls: invalid option -- '%c'\n", args[a][b]);
-                return;
+                return 0;
             }
         cnt++;
     }
@@ -156,6 +156,7 @@ void ls()
             printf("\n");
         shown++;
     }
+    return 1;
 }
 
 #endif

@@ -12,12 +12,12 @@
 #include <sys/wait.h>
 #include <signal.h>
 
-void nightswatch()
+int nightswatch()
 {
     if (numargs != 4)
     {
         printf("nightswatch: Too few arguments\n");
-        return;
+        return 0;
     }
     int nFlag = 0;
     int intervals = -1;
@@ -30,7 +30,7 @@ void nightswatch()
             if (args[2][a] < 48 || args[2][a] > 57)
             {
                 printf("nightswatch: Invalid arguments\n");
-                return;
+                return 0;
             }
         for (int a = 0; a < len; a++)
         {
@@ -39,12 +39,11 @@ void nightswatch()
         }
     }
     if (strcmp(args[3], "interrupt") == 0)
-        getinterrupts(intervals);
+        return getinterrupts(intervals);
     else if (strcmp(args[3], "newborn") == 0)
-        getnewborns(intervals);
-    else
-        printf("nightswatch: Invaid option\n");
-    return;
+        return getnewborns(intervals);
+    printf("nightswatch: Invaid option\n");
+    return 0;
 }
 
 #endif

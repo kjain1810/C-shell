@@ -17,12 +17,12 @@ int getSize(const char *path)
     return stats->st_size;
 }
 
-void history()
+int history()
 {
     if (numargs > 2)
     {
         printf("history: too many arguments\n");
-        return;
+        return 0;
     }
     char tmp[MAX_PATH_LENGTH];
     strcpy(tmp, shellPath);
@@ -47,7 +47,7 @@ void history()
         if (args[1][a] < 48 || args[1][a] > 57)
         {
             printf("history: invalid arguments\n");
-            return;
+            return 0;
         }
     int cnt = 0;
     len = strlen(historyReader);
@@ -84,6 +84,7 @@ void history()
             printf("%d ", ++hisNumber);
         idx++;
     }
+    return 1;
 }
 
 void addCommand()

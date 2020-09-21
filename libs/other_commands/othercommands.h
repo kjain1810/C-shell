@@ -12,16 +12,13 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-void otherCommands()
+int otherCommands()
 {
     signal(SIGCHLD, processEnd);
     for (int a = 1; a < numargs; a++)
         if (strcmp(args[a], "&") == 0)
-        {
-            backgroundProcess();
-            return;
-        }
-    foregroundProcess();
+            return backgroundProcess();
+    return foregroundProcess();
 }
 
 #endif

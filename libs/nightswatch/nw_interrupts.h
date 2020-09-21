@@ -39,11 +39,14 @@ void getthirdline(int st)
     close(fd);
 }
 
-void getinterrupts(int intervals)
+int getinterrupts(int intervals)
 {
     pid_t flg = fork();
     if (flg < 0)
+    {
         printf("%s: unable to fork\n", args[0]);
+        return 0;
+    }
     else if (flg == 0)
     {
         int fd = open("/proc/interrupts", O_RDONLY);
@@ -77,6 +80,7 @@ void getinterrupts(int intervals)
                 break;
             }
         }
+        return 1;
     }
 }
 

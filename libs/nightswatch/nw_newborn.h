@@ -13,11 +13,14 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-void getnewborns(int intervals)
+int getnewborns(int intervals)
 {
     pid_t flg = fork();
     if (flg < 0)
+    {
         printf("%s: unable to fork\n", args[0]);
+        return 0;
+    }
     else if (flg == 0)
     {
         for (;;)
@@ -50,6 +53,7 @@ void getnewborns(int intervals)
                 break;
             }
         }
+        return 1;
     }
 }
 

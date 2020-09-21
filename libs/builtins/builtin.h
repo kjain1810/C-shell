@@ -8,18 +8,24 @@
 #include <dirent.h>
 #include <errno.h>
 
-void pwd()
+int pwd()
 {
     if (numargs > 1)
     {
         printf("pwd: Too many arguments!\n");
-        return;
+        return 0;
     }
     char curPath[MAX_PATH_LENGTH];
     if (getcwd(curPath, sizeof(curPath)) != NULL)
+    {
         printf("%s\n", curPath);
+        return 1;
+    }
     else
+    {
         perror("pwd");
+        return 0;
+    }
 }
 
 void makePath(char destination[])
@@ -93,28 +99,28 @@ void makePath(char destination[])
     makePath(destination);
 }
 
-void cd()
+int cd()
 {
     if (numargs > 2)
     {
         printf("cd: Too many arguments!\n");
-        return;
+        return 0;
     }
     if (numargs == 1)
     {
         if (getcwd(lwd, sizeof(lwd)) == NULL)
         {
             perror("Path error");
-            _exit(1);
+            return 0;
         }
         chdir(shellPath);
-        return;
+        return 1;
     }
     if (args[1][0] == '-')
     {
         chdir(lwd);
         printf("%s\n", lwd);
-        return;
+        return 1;
     }
     if (args[1][0] == '/')
     {
@@ -122,15 +128,15 @@ void cd()
         if (dir == NULL)
         {
             perror("cd");
-            return;
+            return 0;
         }
         if (getcwd(lwd, sizeof(lwd)) == NULL)
         {
             perror("Path error");
-            _exit(1);
+            return 0;
         }
         chdir(args[1]);
-        return;
+        return 1;
     }
     char destination[MAX_PATH_LENGTH];
     for (int a = 0; a < MAX_PATH_LENGTH; a++)
@@ -143,10 +149,10 @@ void cd()
             if (getcwd(lwd, sizeof(lwd)) == NULL)
             {
                 perror("Path error");
-                _exit(1);
+                return 0;
             }
             chdir(shellPath);
-            return;
+            return 1;
         }
         args[1]++;
         args[1]++;
@@ -154,7 +160,7 @@ void cd()
     else if (getcwd(destination, sizeof(destination)) == NULL)
     {
         perror("Path error");
-        return;
+        return 0;
     }
     int len = strlen(destination);
     if (destination[len - 1] != '/')
@@ -171,16 +177,18 @@ void cd()
         if (getcwd(lwd, sizeof(lwd)) == NULL)
         {
             perror("Path error");
-            _exit(1);
+            return 0;
         }
         chdir(destination);
+        return 1;
     }
 }
 
-void echo()
+int echo()
 {
     for (int a = 1; a < numargs; a++)
         printf("%s ", args[a]);
     printf("\n");
+    return 1;
 }
 #endif

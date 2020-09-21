@@ -34,9 +34,14 @@ void shellPrompt()
     struct passwd *p = getpwuid(getuid());
     char *userName = p->pw_name;
     char *systemName = unameData.nodename;
+    if (commandStatus && !interrupted)
+        exit_status[2] = ')';
+    else
+        exit_status[2] = '(';
     sprintf(prompt, "%s<%s@%s:%s> ", exit_status, userName, systemName, curPath);
     printf("\033[0;32m%s\033[0m", prompt);
     fflush(stdout);
+    interrupted = 0;
 }
 
 #endif

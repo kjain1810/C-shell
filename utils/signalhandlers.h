@@ -34,6 +34,7 @@ void handleSigint()
     {
         kill(curForegroundProcess, SIGINT);
         curForegroundProcess = shellPID;
+        interrupted = 1;
     }
     else
     {
@@ -51,7 +52,7 @@ void handleSigtstp()
     kill(curForegroundProcess, SIGTSTP);
     printf("[%d] %d\n", ++commandCnt, curForegroundProcess);
     curForegroundProcess = shellPID;
-    exit_status[2] = '(';
+    interrupted = 1;
 }
 
 #endif

@@ -8,13 +8,13 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-void foregroundProcess()
+int foregroundProcess()
 {
     pid_t flg = fork();
     if (flg < 0)
     {
         printf("%s: unable to fork\n", args[0]);
-        return;
+        return 0;
     }
     else if (flg == 0)
     {
@@ -33,9 +33,9 @@ void foregroundProcess()
         int ret = waitpid(flg, &status, WUNTRACED);
         curForegroundProcess = shellPID;
         if (ret == -1)
-            exit_status[2] = '(';
+            return 0;
         else
-            exit_status[2] = ')';
+            return 1;
     }
 }
 

@@ -9,20 +9,20 @@
 #include "./startbg.h"
 #include <string.h>
 
-void updatejobs()
+int updatejobs()
 {
     if (strcmp(args[0], "jobs") == 0)
-        listjobs();
+        return listjobs();
     else if (strcmp(args[0], "kjob") == 0)
-        sendsignal();
+        return sendsignal();
     else if (strcmp(args[0], "fg") == 0)
-        bringtoforeground();
+        return bringtoforeground();
     else if (strcmp(args[0], "overkill") == 0)
-        killall();
+        return killall();
     else if (strcmp(args[0], "bg") == 0)
-        startbg();
-    else
-        printf("Why am I here in libs/jobs/updatejobs.h?\n");
+        return startbg();
+    printf("Why am I here in libs/jobs/updatejobs.h?\n");
+    return 0;
 }
 
 #endif

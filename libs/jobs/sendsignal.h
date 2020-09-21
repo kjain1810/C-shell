@@ -5,12 +5,12 @@
 #include <stdio.h>
 #include <signal.h>
 
-void sendsignal()
+int sendsignal()
 {
     if (numargs != 3)
     {
         printf("%s: invalid number of arguments\n", args[0]);
-        return;
+        return 0;
     }
     int len_arg1 = strlen(args[1]);
     int len_arg2 = strlen(args[2]);
@@ -18,13 +18,13 @@ void sendsignal()
         if (args[1][a] > 57 || args[1][a] < 48)
         {
             printf("%s: invalid argument %s\n", args[0], args[1]);
-            return;
+            return 0;
         }
     for (int a = 0; a < len_arg2; a++)
         if (args[2][a] > 57 || args[2][a] < 48)
         {
             printf("%s: invalid argument %s\n", args[0], args[2]);
-            return;
+            return 0;
         }
     int arg1 = 0;
     for (int a = 0; a < len_arg1; a++)
@@ -41,9 +41,10 @@ void sendsignal()
     if (commandCnt < arg1 || arg1 == 0)
     {
         printf("%s: no such job\n");
-        return;
+        return 1;
     }
     kill(processesID[arg1 - 1], arg2);
+    return 1;
 }
 
 #endif

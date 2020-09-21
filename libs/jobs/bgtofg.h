@@ -7,19 +7,19 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-void bringtoforeground()
+int bringtoforeground()
 {
     if (numargs != 2)
     {
         printf("%s: invalid number of arguments\n", args[0]);
-        return;
+        return 0;
     }
     int len_arg1 = strlen(args[1]);
     for (int a = 0; a < len_arg1; a++)
         if (args[1][a] < 48 || args[1][a] > 57)
         {
             printf("%s: invalid argument\n", args[0]);
-            return;
+            return 0;
         }
     int arg1 = 0;
     for (int a = 0; a < len_arg1; a++)
@@ -30,8 +30,7 @@ void bringtoforeground()
     if (arg1 > commandCnt || arg1 == 0)
     {
         printf("%s: no such job\n", args[0]);
-        exit_status[2] = '(';
-        return;
+        return 0;
     }
     kill(processesID[arg1 - 1], SIGCONT);
     tcsetpgrp(0, getpgid(processesID[arg1 - 1]));
@@ -42,9 +41,9 @@ void bringtoforeground()
     signal(SIGTTOU, SIG_DFL);
     signal(SIGTTIN, SIG_DFL);
     if (x == -1)
-        exit_status[2] = '(';
+        return 0;
     else
-        exit_status[2] = ')';
+        return 1;
 }
 
 #endif

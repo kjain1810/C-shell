@@ -24,29 +24,29 @@ void lookup()
         _exit(0);
     }
     else if (strcmp(args[0], "pwd") == 0)
-        pwd();
+        commandStatus = pwd();
     else if (strcmp(args[0], "cd") == 0)
-        cd();
+        commandStatus = cd();
     else if (strcmp(args[0], "echo") == 0)
-        echo();
+        commandStatus = echo();
     else if (strcmp(args[0], "ls") == 0)
-        ls();
+        commandStatus = ls();
     else if (strcmp(args[0], "pinfo") == 0)
-        pinfo();
+        commandStatus = pinfo();
     else if (strcmp(args[0], "history") == 0)
-        history();
+        commandStatus = history();
     else if (strcmp(args[0], "nightswatch") == 0)
-        nightswatch();
+        commandStatus = nightswatch();
     else if (strcmp(args[0], "setenv") == 0 || strcmp(args[0], "unsetenv") == 0)
-        envupdate();
+        commandStatus = envupdate();
     else if (strcmp(args[0], "jobs") == 0 || strcmp(args[0], "kjob") == 0 || strcmp(args[0], "fg") == 0 || strcmp(args[0], "overkill") == 0 || strcmp(args[0], "bg") == 0)
-        updatejobs();
+        commandStatus = updatejobs();
     else if (args[0][0] == '$')
     {
         printf("%s\n", getenv(args[0] + 1));
     }
     else
-        otherCommands();
+        commandStatus = otherCommands();
 }
 
 int main(int agrc, char *agrv[])

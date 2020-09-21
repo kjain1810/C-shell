@@ -6,10 +6,11 @@
 #include <signal.h>
 #include <unistd.h>
 
-void killall()
+int killall()
 {
     for (int a = 0; a < commandCnt; a++)
         kill(processesID[a], 9);
+    return 1;
 }
 
 #endif

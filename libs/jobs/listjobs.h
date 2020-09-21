@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-void listjobs()
+int listjobs()
 {
     for (int a = 0; a < commandCnt; a++)
     {
@@ -14,6 +14,7 @@ void listjobs()
         else
             printf("[%d] Stopped %s [%d]\n", a + 1, processesName[a], processesID[a]);
     }
+    return 1;
 }
 
 #endif
