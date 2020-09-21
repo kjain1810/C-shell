@@ -50,31 +50,6 @@ void lookup()
         otherCommands();
 }
 
-void handleSigint()
-{
-    if (curForegroundProcess != shellPID)
-    {
-        kill(curForegroundProcess, SIGINT);
-        curForegroundProcess = shellPID;
-    }
-    else
-    {
-        printf("\n");
-        shellPrompt();
-    }
-}
-
-void handleSigtstp()
-{
-    if (curForegroundProcess == shellPID)
-        return;
-    processesID[commandCnt] = curForegroundProcess;
-    strcpy(processesName[commandCnt], args[0]);
-    kill(curForegroundProcess, SIGTSTP);
-    printf("[%d] %d\n", ++commandCnt, curForegroundProcess);
-    curForegroundProcess = shellPID;
-}
-
 int main(int agrc, char *agrv[])
 {
     signal(SIGINT, handleSigint);
