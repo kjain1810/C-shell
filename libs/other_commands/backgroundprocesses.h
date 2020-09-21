@@ -14,6 +14,7 @@ void backgroundProcess()
     pid_t flg = fork();
     if (flg < 0)
     {
+        exit_status[2] = '(';
         printf("%s: unable to fork\n", args[0]);
         return;
     }
@@ -45,6 +46,7 @@ void backgroundProcess()
         processesID[commandCnt] = flg;
         strcpy(processesName[commandCnt], args[0]);
         printf("[%d] %d\n", ++commandCnt, flg);
+        exit_status[2] = ')';
     }
 }
 

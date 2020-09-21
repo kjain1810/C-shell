@@ -51,6 +51,10 @@ void lookup()
 
 int main(int agrc, char *agrv[])
 {
+    exit_status[0] = ':';
+    exit_status[1] = 39;
+    exit_status[2] = ')';
+    exit_status[3] = '\0';
     signal(SIGINT, handleSigint);
     signal(SIGTSTP, handleSigtstp);
     if (getcwd(shellPath, sizeof(shellPath)) == NULL)

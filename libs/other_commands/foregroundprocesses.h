@@ -30,8 +30,12 @@ void foregroundProcess()
     {
         curForegroundProcess = flg;
         int status;
-        waitpid(flg, &status, WUNTRACED);
+        int ret = waitpid(flg, &status, WUNTRACED);
         curForegroundProcess = shellPID;
+        if (ret == -1)
+            exit_status[2] = '(';
+        else
+            exit_status[2] = ')';
     }
 }
 

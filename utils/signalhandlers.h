@@ -51,6 +51,7 @@ void handleSigtstp()
     kill(curForegroundProcess, SIGTSTP);
     printf("[%d] %d\n", ++commandCnt, curForegroundProcess);
     curForegroundProcess = shellPID;
+    exit_status[2] = '(';
 }
 
 #endif

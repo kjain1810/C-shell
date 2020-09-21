@@ -34,7 +34,7 @@ void shellPrompt()
     struct passwd *p = getpwuid(getuid());
     char *userName = p->pw_name;
     char *systemName = unameData.nodename;
-    sprintf(prompt, "<%s@%s:%s> ", userName, systemName, curPath);
+    sprintf(prompt, "%s<%s@%s:%s> ", exit_status, userName, systemName, curPath);
     printf("\033[0;32m%s\033[0m", prompt);
     fflush(stdout);
 }
