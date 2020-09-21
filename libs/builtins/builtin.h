@@ -102,7 +102,18 @@ void cd()
     }
     if (numargs == 1)
     {
+        if (getcwd(lwd, sizeof(lwd)) == NULL)
+        {
+            perror("Path error");
+            _exit(1);
+        }
         chdir(shellPath);
+        return;
+    }
+    if (args[1][0] == '-')
+    {
+        chdir(lwd);
+        printf("%s\n", lwd);
         return;
     }
     if (args[1][0] == '/')
@@ -112,6 +123,11 @@ void cd()
         {
             perror("cd");
             return;
+        }
+        if (getcwd(lwd, sizeof(lwd)) == NULL)
+        {
+            perror("Path error");
+            _exit(1);
         }
         chdir(args[1]);
         return;
@@ -124,6 +140,11 @@ void cd()
         strcpy(destination, shellPath);
         if (strlen(args[1]) == 1)
         {
+            if (getcwd(lwd, sizeof(lwd)) == NULL)
+            {
+                perror("Path error");
+                _exit(1);
+            }
             chdir(shellPath);
             return;
         }
@@ -146,7 +167,14 @@ void cd()
     if (dir == NULL)
         perror("cd");
     else
+    {
+        if (getcwd(lwd, sizeof(lwd)) == NULL)
+        {
+            perror("Path error");
+            _exit(1);
+        }
         chdir(destination);
+    }
 }
 
 void echo()

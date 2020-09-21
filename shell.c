@@ -15,7 +15,6 @@
 
 char curPath[MAX_PATH_LENGTH];        // Current path of shell
 char prompt[MAX_SHELL_PROMPT_LENGTH]; // Prompt
-char *inp;
 
 void lookup()
 {
@@ -59,6 +58,7 @@ int main(int agrc, char *agrv[])
         perror("Shell path error: ");
         return 1;
     }
+    strcpy(lwd, shellPath);
     curForegroundProcess = shellPID = (int)getpid();
     multiargs = (char **)malloc(MAX_INPUT * sizeof(char *));
     while (1)
@@ -91,7 +91,6 @@ int main(int agrc, char *agrv[])
             if (changedStdIn)
                 resetInputFile();
         }
-        free(multiargs);
         free(inp);
     }
     return 0;

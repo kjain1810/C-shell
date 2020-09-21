@@ -4,6 +4,7 @@
 #include "../../utils/global.h"
 #include "../../utils/signalhandlers.h"
 #include "./backgroundprocesses.h"
+#include "./foregroundprocesses.h"
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
