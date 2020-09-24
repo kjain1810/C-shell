@@ -74,7 +74,10 @@ int main(int agrc, char *agrv[])
         inp[len - 1] = '\0';
         len = strlen(inp);
         if (len == 0)
+        {
+            commandStatus = 1;
             continue;
+        }
         separateMultiArgs(inp);
         for (int a = 0; a < numCommands; a++)
         {
