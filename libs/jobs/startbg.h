@@ -31,7 +31,86 @@ int startbg()
         printf("%s: no such job\n", args[0]);
         return 0;
     }
-    // kill(getpgid(processesID[arg1 - 1]), SIGCONT);
+    int x = kill(processesID[arg1 - 1], SIGCONT);
+    if (x < 0)
+    {
+        printf("Error in sending SIGCONT\n");
+        return 0;
+    }
+    return 1;
 }
 
 #endif
+
+/*
+#include "headers.h"
+
+extern char homepath[], curpath[] ; 
+extern int processes[], processCnt ;
+
+int sigintFlag = 0, sigtstpFlag = 0, pid ; 
+
+void sigtstpHandler(int sig) {
+	kill(pid, SIGTSTP); 
+	// processes[processCnt++] = pid ; 
+}
+
+void sigintHandler(int sig) {
+	kill(pid, SIGINT); 
+	return ;
+}
+
+void handle_fg(char* command) {
+	char* token = strtok(command, " \t");
+	char* jobnum = strtok(NULL, " \t");
+
+	if(jobnum == NULL) {
+        perror("Usage: fg [job number]");
+        return;
+	}
+	// handle jobnum if it is not integer!! 
+
+	int job = atoi(jobnum);
+	int i, exists = 0, cnt = 0 ;
+	for(i = 0; i < processCnt; i++) {
+		if(processes[i] < 0) continue ; 
+		if(job == ++cnt) {
+			exists = 1 ; 
+			int status ; pid = processes[i] ;
+			signal(SIGINT, sigintHandler); signal(SIGTSTP, sigtstpHandler); 
+			// resume bg process into foregroung and wait for it untill interrupted 
+			kill(pid, SIGCONT);
+			waitpid(pid, &status, WUNTRACED);
+			break ;
+		}
+	}
+	if(!exists) perror("Given job does not exist!"); 
+
+}
+
+void handle_bg(char* command) {
+	char* token = strtok(command, " \t");
+	char* jobnum = strtok(NULL, " \t");
+
+	if(jobnum == NULL) {
+        perror("Usage: fg [job number]");
+        return;
+	}
+	// handle jobnum if it is not integer!! 
+
+	int job = atoi(jobnum);
+	int i, exists = 0, cnt = 0 ;
+	for(i = 0; i < processCnt; i++) {
+		if(processes[i] < 0) continue ; 
+		if(job == ++cnt) {
+			exists = 1 ; 
+			// SIGSTOP for stopping and SIGCONT for resuming 
+			if( kill(processes[i], SIGCONT) < 0) {
+				perror("Error in changing the state of the process to running the given job");
+				return ; 
+			}
+		}
+	}
+	if(!exists) perror("Given job does not exist!"); 
+}
+*/

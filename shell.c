@@ -1,17 +1,18 @@
 #include <string.h>
-#include <sys/wait.h>
-#include <signal.h>
-#include "./libs/builtins/builtin.h"
+#include <stdlib.h>
 #include "./utils/getinput.h"
 #include "./utils/global.h"
+#include "./utils/checkpipes.h"
+#include "./utils/prompt.h"
+#include "./utils/signalhandlers.h"
 #include "./libs/ls/ls.h"
 #include "./libs/pinfo/pinfo.h"
 #include "./libs/other_commands/othercommands.h"
 #include "./libs/history/history.h"
 #include "./libs/nightswatch/nightswatch.h"
-#include "./utils/prompt.h"
 #include "./libs/envupdate/envupdate.h"
 #include "./libs/jobs/updatejobs.h"
+#include "./libs/builtins/builtin.h"
 
 char curPath[MAX_PATH_LENGTH];        // Current path of shell
 char prompt[MAX_SHELL_PROMPT_LENGTH]; // Prompt
@@ -47,6 +48,78 @@ void lookup()
     }
     else
         commandStatus = otherCommands();
+}
+
+void lookup_pipes()
+{
+    int totargs = numargs;
+    char **allargs = (char **)malloc(INPUT_LENGTH * sizeof(char *));
+    for (int a = 0; a < totargs; a++)
+    {
+        allargs[a] = (char *)malloc(INPUT_LENGTH * sizeof(char));
+        strcpy(allargs[a], args[a]);
+        int x = strlen(args[a]);
+        for (int b = 0; b < x; b++)
+            args[a][b] = '\0';
+    }
+    numargs = 0;
+    int fd[2], in = 0;
+    printf("here\n");
+    for (int a = 0; a < totargs; a++)
+    {
+        printf("%d %s: %d\n", a, allargs[a], numargs);
+        if (strcmp(allargs[a], "|") == 0)
+        {
+            pipe(fd);
+            pid_t pid = fork();
+            if (pid == 0)
+            {
+                if (in != 0)
+                {
+                    dup2(in, 0);
+                    close(in);
+                }
+                if (fd[1] != 1)
+                {
+                    dup2(fd[1], 1);
+                    close(fd[1]);
+                }
+                lookup();
+                exit(0);
+            }
+            close(fd[1]);
+            in = fd[0];
+            for (int a = 0; a < numargs; a++)
+            {
+                int x = strlen(args[a]);
+                for (int b = 0; b < x; b++)
+                    args[a][b] = '\0';
+            }
+            numargs = 0;
+        }
+        else
+        {
+            strcpy(args[numargs++], allargs[a]);
+            if (a == totargs - 1)
+            {
+                // pipe(fd);
+                pid_t pid = fork();
+                if (pid == 0)
+                {
+                    if (in != 0)
+                    {
+                        dup2(in, 0);
+                        close(in);
+                    }
+                    // dup2(fd[1], 1);
+                    // close(fd[1]);
+                    lookup();
+                    exit(0);
+                }
+                // close(fd[1]);
+            }
+        }
+    }
 }
 
 int main(int agrc, char *agrv[])
@@ -87,7 +160,10 @@ int main(int agrc, char *agrv[])
             parseOutputFiles();
             if (!todo)
                 continue;
-            lookup();
+            if (checkpipes())
+                lookup_pipes();
+            else
+                lookup();
             addCommand();
             free(args);
             if (changedStdOut)
