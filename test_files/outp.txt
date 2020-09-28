@@ -1,8 +1,0 @@
-libs
-Makefile
-OSNW-3.pdf
-README.md
-shell
-shell.c
-test_files
-utils

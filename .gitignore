@@ -1,3 +1,4 @@
 shell
 temp_files*
+test_files*
 .shell_history.txt
