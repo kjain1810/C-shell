@@ -50,76 +50,54 @@ void lookup()
         commandStatus = otherCommands();
 }
 
+void execute_pipe(int in, int out)
+{
+    printf("%s %d\n", args[0], numargs);
+    pid_t pid = fork();
+    if (pid == 0)
+    {
+        args[numargs] = NULL;
+        if (in != 0)
+        {
+            dup2(in, 0);
+            close(in);
+        }
+        if (out != 1)
+        {
+            dup2(out, 1);
+            close(out);
+        }
+        lookup();
+        exit(0);
+    }
+}
+
 void lookup_pipes()
 {
-    int totargs = numargs;
-    char **allargs = (char **)malloc(INPUT_LENGTH * sizeof(char *));
-    for (int a = 0; a < totargs; a++)
+    char **tmpargs = args;
+    int totalargs = numargs;
+    numargs = 1;
+    int fd[2];
+    int in = 0;
+    for (int a = 1; a < totalargs; a++)
     {
-        allargs[a] = (char *)malloc(INPUT_LENGTH * sizeof(char));
-        strcpy(allargs[a], args[a]);
-        int x = strlen(args[a]);
-        for (int b = 0; b < x; b++)
-            args[a][b] = '\0';
-    }
-    numargs = 0;
-    int fd[2], in = 0;
-    printf("here\n");
-    for (int a = 0; a < totargs; a++)
-    {
-        printf("%d %s: %d\n", a, allargs[a], numargs);
-        if (strcmp(allargs[a], "|") == 0)
+        if (strcmp(tmpargs[a], "|") == 0)
         {
             pipe(fd);
-            pid_t pid = fork();
-            if (pid == 0)
-            {
-                if (in != 0)
-                {
-                    dup2(in, 0);
-                    close(in);
-                }
-                if (fd[1] != 1)
-                {
-                    dup2(fd[1], 1);
-                    close(fd[1]);
-                }
-                lookup();
-                exit(0);
-            }
+            execute_pipe(in, fd[1]);
             close(fd[1]);
             in = fd[0];
-            for (int a = 0; a < numargs; a++)
-            {
-                int x = strlen(args[a]);
-                for (int b = 0; b < x; b++)
-                    args[a][b] = '\0';
-            }
-            numargs = 0;
+            args += numargs;
+            args++;
+            numargs = 1;
+            a++;
         }
         else
-        {
-            strcpy(args[numargs++], allargs[a]);
-            if (a == totargs - 1)
-            {
-                // pipe(fd);
-                pid_t pid = fork();
-                if (pid == 0)
-                {
-                    if (in != 0)
-                    {
-                        dup2(in, 0);
-                        close(in);
-                    }
-                    // dup2(fd[1], 1);
-                    // close(fd[1]);
-                    lookup();
-                    exit(0);
-                }
-                // close(fd[1]);
-            }
-        }
+            numargs++;
     }
+    execute_pipe(in, 1);
+    numargs = totalargs;
+    args = tmpargs;
 }
 
 int main(int agrc, char *agrv[])
