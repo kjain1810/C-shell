@@ -3,6 +3,6 @@ all:
 	touch .shell_history.txt
 
 clean:
-	rm .shell_history
+	rm .shell_history.txt
 	rm -rf test_files
 	rm shell
