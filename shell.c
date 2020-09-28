@@ -93,6 +93,12 @@ void lookup_pipes()
         }
         else
             numargs++;
+        if (!commandStatus)
+        {
+            numargs = totalargs;
+            args = tmpargs;
+            return;
+        }
     }
     execute_pipe(in, 1);
     numargs = totalargs;
