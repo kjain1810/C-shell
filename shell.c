@@ -4,6 +4,7 @@
 #include "./libs/builtins/builtin.h"
 #include "./utils/getinput.h"
 #include "./utils/global.h"
+#include "./utils/checkpipes.h"
 #include "./libs/ls/ls.h"
 #include "./libs/pinfo/pinfo.h"
 #include "./libs/other_commands/othercommands.h"
@@ -49,6 +50,55 @@ void lookup()
         commandStatus = otherCommands();
 }
 
+void execute_pipe(int in, int out)
+{
+    pid_t pid = fork();
+    if (pid == 0)
+    {
+        args[numargs] = NULL;
+        if (in != 0)
+        {
+            dup2(in, 0);
+            close(in);
+        }
+        if (out != 1)
+        {
+            dup2(out, 1);
+            close(out);
+        }
+        lookup();
+        exit(0);
+    }
+}
+
+void lookup_pipes()
+{
+    char **tmpargs = args;
+    int totalargs = numargs;
+    numargs = 1;
+    int fd[2];
+    int in = 0;
+    for (int a = 1; a < totalargs; a++)
+    {
+        if (strcmp(tmpargs[a], "|") == 0)
+        {
+            pipe(fd);
+            execute_pipe(in, fd[1]);
+            close(fd[1]);
+            in = fd[0];
+            args += numargs;
+            args++;
+            numargs = 1;
+            a++;
+        }
+        else
+            numargs++;
+    }
+    execute_pipe(in, 1);
+    numargs = totalargs;
+    args = tmpargs;
+}
+
 int main(int agrc, char *agrv[])
 {
     exit_status[0] = ':';
@@ -90,7 +140,10 @@ int main(int agrc, char *agrv[])
             parseOutputFiles();
             if (!todo)
                 continue;
-            lookup();
+            if (checkpipes())
+                lookup_pipes();
+            else
+                lookup();
             addCommand();
             free(args);
             if (changedStdOut)
