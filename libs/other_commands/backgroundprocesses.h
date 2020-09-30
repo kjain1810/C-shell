@@ -44,7 +44,7 @@ int backgroundProcess()
     {
         processesID[commandCnt] = flg;
         strcpy(processesName[commandCnt], args[0]);
-        printf("[%d] %d\n", ++commandCnt, flg);
+        fprintf(stderr, "[%d] %d\n", ++commandCnt, flg);
         return 1;
     }
 }

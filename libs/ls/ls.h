@@ -93,6 +93,7 @@ int ls()
         strcpy(args[numargs], ".");
         numargs++;
     }
+    int exitCode = 1;
     for (int a = 1; a < numargs; a++)
     {
         int x = strlen(args[a]);
@@ -114,6 +115,7 @@ int ls()
         if (dir == NULL)
         {
             perror("ls");
+            exitCode = 0;
             continue;
         }
         if (num_dir > 1)
@@ -156,7 +158,7 @@ int ls()
             printf("\n");
         shown++;
     }
-    return 1;
+    return exitCode;
 }
 
 #endif

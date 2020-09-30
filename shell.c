@@ -43,9 +43,7 @@ void lookup()
     else if (strcmp(args[0], "jobs") == 0 || strcmp(args[0], "kjob") == 0 || strcmp(args[0], "fg") == 0 || strcmp(args[0], "overkill") == 0 || strcmp(args[0], "bg") == 0)
         commandStatus = updatejobs();
     else if (args[0][0] == '$')
-    {
         printf("%s\n", getenv(args[0] + 1));
-    }
     else
         commandStatus = otherCommands();
 }
@@ -69,6 +67,7 @@ void execute_pipe(int in, int out)
         lookup();
         exit(0);
     }
+    waitpid(pid, NULL, WUNTRACED);
 }
 
 void lookup_pipes()
