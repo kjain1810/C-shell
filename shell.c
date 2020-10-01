@@ -1,155 +1,23 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <signal.h>
-#include "./libs/builtins/builtin.h"
 #include "./utils/getinput.h"
 #include "./utils/global.h"
 #include "./utils/checkpipes.h"
+#include "./utils/lookup.h"
+#include "./utils/prompt.h"
+#include "./utils/piping.h"
 #include "./libs/ls/ls.h"
+#include "./libs/builtins/builtin.h"
 #include "./libs/pinfo/pinfo.h"
 #include "./libs/other_commands/othercommands.h"
 #include "./libs/history/history.h"
 #include "./libs/nightswatch/nightswatch.h"
-#include "./utils/prompt.h"
 #include "./libs/envupdate/envupdate.h"
 #include "./libs/jobs/updatejobs.h"
 
 char curPath[MAX_PATH_LENGTH];        // Current path of shell
 char prompt[MAX_SHELL_PROMPT_LENGTH]; // Prompt
-
-void final_lookup()
-{
-    if (strcmp(args[0], "quit") == 0)
-    {
-        addCommand();
-        _exit(0);
-    }
-    else if (strcmp(args[0], "pwd") == 0)
-        commandStatus = pwd();
-    else if (strcmp(args[0], "cd") == 0)
-        commandStatus = cd();
-    else if (strcmp(args[0], "echo") == 0)
-        commandStatus = echo();
-    else if (strcmp(args[0], "ls") == 0)
-        commandStatus = ls();
-    else if (strcmp(args[0], "pinfo") == 0)
-        commandStatus = pinfo();
-    else if (strcmp(args[0], "history") == 0)
-        commandStatus = history();
-    else if (strcmp(args[0], "nightswatch") == 0)
-        commandStatus = nightswatch();
-    else if (strcmp(args[0], "setenv") == 0 || strcmp(args[0], "unsetenv") == 0)
-        commandStatus = envupdate();
-    else if (strcmp(args[0], "jobs") == 0 || strcmp(args[0], "kjob") == 0 || strcmp(args[0], "fg") == 0 || strcmp(args[0], "overkill") == 0 || strcmp(args[0], "bg") == 0)
-        commandStatus = updatejobs();
-    else if (args[0][0] == '$')
-        printf("%s\n", getenv(args[0] + 1));
-    else
-        commandStatus = otherCommands();
-}
-
-void lookup()
-{
-    char **argtemp = args;
-    int totalargs = numargs;
-    numargs = 0;
-    int done = 0;
-    for (int a = 0; a < totalargs; a++)
-    {
-        if (strcmp(argtemp[a], "$") == 0)
-        {
-            final_lookup();
-            if (commandCnt == 0)
-            {
-                args = argtemp;
-                numargs = totalargs;
-                return;
-            }
-            else
-            {
-                args = argtemp + a + 1;
-                numargs = 0;
-            }
-        }
-        else if (strcmp(argtemp[a], "@") == 0)
-        {
-            // argtemp[a] = NULL;
-            final_lookup();
-            if (commandCnt == 1)
-            {
-                args = argtemp;
-                numargs = totalargs;
-                return;
-            }
-            else
-            {
-                args = argtemp + a + 1;
-                numargs = 0;
-            }
-        }
-        else
-            numargs++;
-    }
-    final_lookup();
-    numargs = totalargs;
-    args = argtemp;
-}
-
-void execute_pipe(int in, int out)
-{
-    pid_t pid = fork();
-    if (pid == 0)
-    {
-        args[numargs] = NULL;
-        if (in != 0)
-        {
-            dup2(in, 0);
-            close(in);
-        }
-        if (out != 1)
-        {
-            dup2(out, 1);
-            close(out);
-        }
-        lookup();
-        exit(0);
-    }
-    waitpid(pid, NULL, WUNTRACED);
-}
-
-void lookup_pipes()
-{
-    char **tmpargs = args;
-    int totalargs = numargs;
-    numargs = 1;
-    int fd[2];
-    int in = 0;
-    for (int a = 1; a < totalargs; a++)
-    {
-        if (strcmp(tmpargs[a], "|") == 0)
-        {
-            pipe(fd);
-            execute_pipe(in, fd[1]);
-            close(fd[1]);
-            in = fd[0];
-            args += numargs;
-            args++;
-            numargs = 1;
-            a++;
-        }
-        else
-            numargs++;
-        if (!commandStatus)
-        {
-            numargs = totalargs;
-            args = tmpargs;
-            return;
-        }
-    }
-    execute_pipe(in, 1);
-    numargs = totalargs;
-    args = tmpargs;
-}
 
 int main(int agrc, char *agrv[])
 {
