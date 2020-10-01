@@ -43,7 +43,10 @@ int sendsignal()
         printf("%s: no such job\n");
         return 1;
     }
-    kill(processesID[arg1 - 1], arg2);
+    if (getpgid(processesID[arg1 - 1]) >= 0)
+        kill(processesID[arg1 - 1], arg2);
+    else
+        printf("Process has been terminated.\n");
     return 1;
 }
 

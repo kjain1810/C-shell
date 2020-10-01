@@ -9,7 +9,8 @@
 int killall()
 {
     for (int a = 0; a < commandCnt; a++)
-        kill(processesID[a], 9);
+        if (getpgid(processesID[a]) >= 0)
+            kill(processesID[a], 9);
     return 1;
 }
 

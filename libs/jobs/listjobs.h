@@ -11,7 +11,6 @@ int listjobs()
     {
         if (getpgid(processesID[a]) >= 0)
         {
-            // printf("[%d] Running %s [%d]\n", a + 1, processesName[a], processesID[a]);
             char processFile[1024];
             strcpy(processFile, "/proc/");
             char pidinchar[10];
@@ -55,7 +54,7 @@ int listjobs()
                 printf("[%d] Running %s [%d]\n", a + 1, processesName[a], processesID[a]);
         }
         else
-            printf("[%d] Stopped %s [%d]\n", a + 1, processesName[a], processesID[a]);
+            printf("[%d] Terminated %s [%d]\n", a + 1, processesName[a], processesID[a]);
     }
     return 1;
 }

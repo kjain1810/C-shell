@@ -31,8 +31,12 @@ int startbg()
         printf("%s: no such job\n", args[0]);
         return 0;
     }
-    int x = kill(processesID[arg1 - 1], SIGCONT);
-    if(x == -1)
+    int x = -1;
+    if (getpgid(processesID[arg1 - 1]) >= 0)
+        x = kill(processesID[arg1 - 1], SIGCONT);
+    else
+        printf("Process has been terminated.\n");
+    if (x == -1)
         return 0;
     return 1;
 }
