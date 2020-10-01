@@ -17,7 +17,7 @@
 char curPath[MAX_PATH_LENGTH];        // Current path of shell
 char prompt[MAX_SHELL_PROMPT_LENGTH]; // Prompt
 
-void lookup()
+void final_lookup()
 {
     if (strcmp(args[0], "quit") == 0)
     {
@@ -46,6 +46,53 @@ void lookup()
         printf("%s\n", getenv(args[0] + 1));
     else
         commandStatus = otherCommands();
+}
+
+void lookup()
+{
+    char **argtemp = args;
+    int totalargs = numargs;
+    numargs = 0;
+    int done = 0;
+    for (int a = 0; a < totalargs; a++)
+    {
+        if (strcmp(argtemp[a], "$") == 0)
+        {
+            final_lookup();
+            if (commandCnt == 0)
+            {
+                args = argtemp;
+                numargs = totalargs;
+                return;
+            }
+            else
+            {
+                args = argtemp + a + 1;
+                numargs = 0;
+            }
+        }
+        else if (strcmp(argtemp[a], "@") == 0)
+        {
+            // argtemp[a] = NULL;
+            final_lookup();
+            if (commandCnt == 1)
+            {
+                args = argtemp;
+                numargs = totalargs;
+                return;
+            }
+            else
+            {
+                args = argtemp + a + 1;
+                numargs = 0;
+            }
+        }
+        else
+            numargs++;
+    }
+    final_lookup();
+    numargs = totalargs;
+    args = argtemp;
 }
 
 void execute_pipe(int in, int out)

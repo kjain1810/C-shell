@@ -18,6 +18,7 @@ int foregroundProcess()
     }
     else if (flg == 0)
     {
+        args[numargs] = NULL;
         if (execvp(args[0], args) < 0)
         {
             printf("%s: command not found\n", args[0]);
