@@ -58,7 +58,7 @@ void lookup()
         if (strcmp(argtemp[a], "$") == 0)
         {
             final_lookup();
-            if (commandCnt == 0)
+            if (commandStatus == 1)
             {
                 args = argtemp;
                 numargs = totalargs;
@@ -73,7 +73,7 @@ void lookup()
         else if (strcmp(argtemp[a], "@") == 0)
         {
             final_lookup();
-            if (commandCnt == 1)
+            if (commandStatus == 0)
             {
                 args = argtemp;
                 numargs = totalargs;
