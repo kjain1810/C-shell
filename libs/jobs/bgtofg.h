@@ -38,7 +38,7 @@ int bringtoforeground()
         tcsetpgrp(0, getpgid(processesID[arg1 - 1]));
         signal(SIGTTOU, SIG_IGN);
         signal(SIGTTIN, SIG_IGN);
-        int x = waitpid(getpgid(processesID[arg1 - 1]), NULL, 0);
+        int x = waitpid(getpgid(processesID[arg1 - 1]), NULL, WUNTRACED);
         tcsetpgrp(0, getpgid(shellPID));
         signal(SIGTTOU, SIG_DFL);
         signal(SIGTTIN, SIG_DFL);

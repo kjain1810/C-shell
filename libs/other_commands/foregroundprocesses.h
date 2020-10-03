@@ -31,7 +31,13 @@ int foregroundProcess()
     {
         curForegroundProcess = flg;
         int status;
+        signal(SIGTTOU, SIG_IGN);
+        signal(SIGTTIN, SIG_IGN);
+        tcsetpgrp(0, getpgid(flg));
         int ret = waitpid(flg, &status, WUNTRACED);
+        tcsetpgrp(0, getpgid(shellPID));
+        signal(SIGTTOU, SIG_DFL);
+        signal(SIGTTIN, SIG_DFL);
         curForegroundProcess = shellPID;
         if (ret == -1)
             return 0;
